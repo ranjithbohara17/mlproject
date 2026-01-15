@@ -44,7 +44,7 @@ class DataIngestion:
             return(
                 self.ingestion_config.train_data_path,
                 self.ingestion_config.test_data_path
-
+SS
             )
         except Exception as e:
             raise CustomException(e,sys)
