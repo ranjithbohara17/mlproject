@@ -1,7 +1,13 @@
+import os
 from flask import Flask, request, render_template
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
-application = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+application = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static"),
+)
 app = application
 
 
@@ -12,7 +18,6 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict_datapoint():
-
     try:
         data = CustomData(
             gender=request.form.get('gender'),
@@ -25,21 +30,18 @@ def predict_datapoint():
         )
 
         pred_df = data.get_data_as_data_frame()
-
         print("Input Data:")
         print(pred_df)
 
         predict_pipeline = PredictPipeline()
-
         results = predict_pipeline.predict(pred_df)
 
-        return render_template('index.html', results=round(results[0], 2))
+        return render_template('index.html', results=round(float(results[0]), 2))
 
     except Exception as e:
         print("ERROR:", e)
-        return f"Something went wrong: {e}"
+        return f"Something went wrong: {e}", 500
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
